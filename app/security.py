@@ -2,6 +2,7 @@ from litestar.connection import ASGIConnection
 from litestar.contrib.jwt import OAuth2PasswordBearerAuth
 from litestar.security.jwt import Token
 
+from app.config import settings
 from app.models import User
 from app.repositories.user import UserRepository
 
@@ -20,7 +21,7 @@ async def retrieve_user_handler(token: Token, connection: ASGIConnection) -> Use
 
 oauth2_auth = OAuth2PasswordBearerAuth[User](
     retrieve_user_handler=retrieve_user_handler,
-    token_secret="secret123",
+    token_secret=settings.jwt_secret,
     token_url="/auth/login",
     exclude=["/auth/login", "/schema"],
 )

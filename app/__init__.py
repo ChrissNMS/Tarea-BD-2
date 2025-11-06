@@ -2,6 +2,7 @@ from litestar.app import Litestar
 from litestar.openapi import OpenAPIConfig
 from litestar.openapi.plugins import ScalarRenderPlugin, SwaggerRenderPlugin
 
+from app.config import settings
 from app.controllers.auth import AuthController
 from app.controllers.book import BookController
 from app.controllers.loan import LoanController
@@ -26,7 +27,7 @@ app = Litestar(
         AuthController,
     ],
     openapi_config=openapi_config,
-    debug=True,
+    debug=settings.debug,
     plugins=[sqlalchemy_plugin],
     on_app_init=[oauth2_auth.on_app_init]
 )
