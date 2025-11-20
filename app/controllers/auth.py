@@ -1,11 +1,11 @@
 from typing import Annotated
 
 from litestar import Controller, Response, post
-from litestar.contrib.jwt import OAuth2Login
 from litestar.di import Provide
 from litestar.enums import RequestEncodingType
 from litestar.exceptions import HTTPException
 from litestar.params import Body
+from litestar.security.jwt import OAuth2Login
 
 from app.dtos.user import UserLoginDTO
 from app.models import User

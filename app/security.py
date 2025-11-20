@@ -1,6 +1,5 @@
 from litestar.connection import ASGIConnection
-from litestar.contrib.jwt import OAuth2PasswordBearerAuth
-from litestar.security.jwt import Token
+from litestar.security.jwt import OAuth2PasswordBearerAuth, Token
 
 from app.config import settings
 from app.models import User
