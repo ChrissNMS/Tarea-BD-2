@@ -1,28 +1,23 @@
-"""Data Transfer Objects for Loan endpoints."""
-
-from advanced_alchemy.extensions.litestar import SQLAlchemyDTO, SQLAlchemyDTOConfig
-
+from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
+from litestar.dto import DTOConfig
 from app.models import Loan
 
-
 class LoanReadDTO(SQLAlchemyDTO[Loan]):
-    """DTO for reading loan data."""
-
-    config = SQLAlchemyDTOConfig()
-
+    config = DTOConfig(max_nested_depth=1)
 
 class LoanCreateDTO(SQLAlchemyDTO[Loan]):
-    """DTO for creating loans."""
-
-    config = SQLAlchemyDTOConfig(
-        exclude={"id", "created_at", "updated_at", "user", "book"},
+    config = DTOConfig(
+        exclude={
+            "id", 
+            "loan_date", 
+            "return_date", 
+            "due_date", 
+            "fine_amount", 
+            "status", 
+            "user", 
+            "book"
+        }
     )
-
 
 class LoanUpdateDTO(SQLAlchemyDTO[Loan]):
-    """DTO for updating loans with partial data."""
-
-    config = SQLAlchemyDTOConfig(
-        exclude={"id", "created_at", "updated_at", "user", "book"},
-        partial=True,
-    )
+    config = DTOConfig(include={"status"}, partial=True)

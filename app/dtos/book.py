@@ -1,28 +1,12 @@
-"""Data Transfer Objects for Book endpoints."""
-
-from advanced_alchemy.extensions.litestar import SQLAlchemyDTO, SQLAlchemyDTOConfig
-
+from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
+from litestar.dto import DTOConfig
 from app.models import Book
 
-
 class BookReadDTO(SQLAlchemyDTO[Book]):
-    """DTO for reading book data."""
-
-    config = SQLAlchemyDTOConfig()
-
+    config = DTOConfig(exclude={"loans"})
 
 class BookCreateDTO(SQLAlchemyDTO[Book]):
-    """DTO for creating books."""
-
-    config = SQLAlchemyDTOConfig(
-        exclude={"id", "created_at", "updated_at", "loans"},
-    )
-
+    config = DTOConfig(exclude={"id", "categories", "reviews", "loans"})
 
 class BookUpdateDTO(SQLAlchemyDTO[Book]):
-    """DTO for updating books with partial data."""
-
-    config = SQLAlchemyDTOConfig(
-        exclude={"id", "created_at", "updated_at", "loans"},
-        partial=True,
-    )
+    config = DTOConfig(exclude={"id", "categories", "reviews", "loans"}, partial=True)

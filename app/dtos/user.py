@@ -1,34 +1,26 @@
-"""Data Transfer Objects for User endpoints."""
-
-from advanced_alchemy.extensions.litestar import SQLAlchemyDTO, SQLAlchemyDTOConfig
-
+from dataclasses import dataclass
+from litestar.dto import DataclassDTO, DTOConfig
+from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
 from app.models import User
 
+# --- 1. MODELO DE DATOS PARA LOGIN (Payload) ---
+@dataclass
+class LoginPayload:
+    email: str
+    password: str
+
+# --- 2. DTO DE LOGIN (Configuración para Litestar) ---
+# Esto arregla el error "AttributeError: ... create_for_field_definition"
+class UserLoginDTO(DataclassDTO[LoginPayload]):
+    config = DTOConfig()
+
+# --- 3. DTOs DE LA TAREA (Tus requerimientos) ---
 
 class UserReadDTO(SQLAlchemyDTO[User]):
-    """DTO for reading user data without password."""
-
-    config = SQLAlchemyDTOConfig(exclude={"admin"})
-
+    config = DTOConfig(exclude={"password", "loans", "reviews"})
 
 class UserCreateDTO(SQLAlchemyDTO[User]):
-    """DTO for creating users."""
-
-    config = SQLAlchemyDTOConfig(
-        exclude={"id", "created_at", "updated_at", "loans"},
-    )
-
+    config = DTOConfig(exclude={"id", "is_active", "loans", "reviews"})
 
 class UserUpdateDTO(SQLAlchemyDTO[User]):
-    """DTO for updating users with partial data."""
-
-    config = SQLAlchemyDTOConfig(
-        exclude={"id", "created_at", "password", "loans"},
-        partial=True,
-    )
-
-
-class UserLoginDTO(SQLAlchemyDTO[User]):
-    """DTO for user login."""
-
-    config = SQLAlchemyDTOConfig(include={"username", "password"})
+    config = DTOConfig(exclude={"id", "is_active", "loans", "reviews"}, partial=True)

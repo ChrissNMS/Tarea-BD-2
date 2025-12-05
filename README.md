@@ -1,55 +1,82 @@
-# API con Litestar y PostgreSQL
+# Tarea 2 - API de Gestión de Biblioteca con Litestar
 
-API REST para gestión de biblioteca que permite administrar usuarios, libros y préstamos. Incluye autenticación JWT y documentación interactiva (Swagger/Scalar).
+Este proyecto implementa una API REST completa para la gestión de una biblioteca, desarrollada utilizando el framework **Litestar**, **SQLAlchemy** para el ORM y **MySQL** como base de datos relacional.
 
-## Requisitos
+## 📋 Descripción del Proyecto
+El sistema permite administrar usuarios, libros, categorías, préstamos y reseñas. Incluye lógica de negocio avanzada como cálculo automático de fechas de vencimiento, multas por atraso, control de stock y validaciones de datos mediante DTOs.
 
-- [uv](https://github.com/astral-sh/uv)
-- PostgreSQL
+## 🛠️ Decisiones de Diseño
+* **Motor de Base de Datos:** Se utilizó **MySQL** (vía driver `pymysql`) debido a la disponibilidad del entorno de desarrollo local, reemplazando la configuración por defecto de PostgreSQL.
+* **Migraciones:** Se implementó **Alembic** para el control de versiones del esquema de la base de datos.
+* **Patrón de Diseño:** Se utilizó el patrón **Controlador-Repositorio** para separar la lógica de negocio de la capa de acceso a datos.
+* **Validaciones:** Se configuraron **DTOs (Data Transfer Objects)** estrictos para controlar qué datos entran y salen de la API, protegiendo campos sensibles como contraseñas y calculados como las multas.
 
-## Inicio rápido
+## ✅ Tabla de Cumplimiento de Requerimientos
 
+| Requerimiento | Estado | Observación |
+| :--- | :---: | :--- |
+| **1. Modelo Category (M-to-M)** | Cumplido | Implementada tabla intermedia `book_categories` y endpoints CRUD. |
+| **2. Modelo Review** | Cumplido | Implementado con validación de rating (1-5) y relaciones con User/Book. |
+| **3. Actualizar Book** | Cumplido | Agregados campos `stock`, `publisher`, `language`. Validación de stock positivo. |
+| **4. Actualizar User** | Cumplido | Agregados campos `email`, `phone`, `address`. Validación regex para email. |
+| **5. Actualizar Loan** | Cumplido | Enum `LoanStatus`, cálculo de `due_date` (+14 días) y `fine_amount`. |
+| **6. BookRepository** | Cumplido | Métodos: búsqueda por autor, filtro por categoría, top reseñas y stock disponible. |
+| **7. LoanRepository** | Cumplido | Lógica de negocio para: multas ($500/día), devoluciones y actualizar stock. |
+| **8. Base de Datos Inicial** | Cumplido | Se incluye script `semilla.py` y respaldo `initial_data.sql` con datos reales. |
+
+## 🚀 Instrucciones de Instalación y Ejecución
+
+Sigue estos pasos para levantar el proyecto desde cero:
+
+### 1. Preparar el Entorno
+Crear y activar el entorno virtual e instalar las dependencias:
 ```bash
-uv sync                      # Instala las dependencias
-cp .env.example .env         # Configura las variables de entorno (ajusta según sea necesario)
-uv run alembic upgrade head  # Aplica las migraciones de la base de datos
-uv run litestar --reload     # Inicia el servidor de desarrollo
-# Accede a http://localhost:8000/schema para ver la documentación de la API
-```
+# Crear entorno
+py -m venv venv
 
-## Variables de entorno
+# Activar (Windows)
+.\venv\Scripts\Activate
 
-Crea un archivo `.env` basado en `.env.example`:
+# Instalar librerías
+pip install litestar[standard] uvicorn sqlalchemy alembic asyncpg pymysql cryptography pydantic-settings advanced-alchemy pyjwt pwdlib argon2-cffi
+2. Configurar Base de Datos
+Crear una base de datos vacía en MySQL llamada library_db.
 
-- `DEBUG`: Modo debug (True/False)
-- `JWT_SECRET_KEY`: Clave secreta para tokens JWT
-- `DATABASE_URL`: URL de conexión a PostgreSQL (formato: `postgresql+psycopg://usuario:contraseña@host:puerto/nombre_bd`). Recuerda crear la base de datos antes de ejecutar la aplicación con `createdb nombre_bd`.
+Configurar el archivo .env en la raíz del proyecto con tus credenciales:
 
-## Estructura del proyecto
+Properties
 
-```
-app/
-├── controllers/     # Endpoints de la API (auth, book, loan, user)
-├── dtos/            # Data Transfer Objects
-├── repositories/    # Capa de acceso a datos
-├── models.py        # Modelos SQLAlchemy (User, Book, Loan)
-├── db.py            # Configuración de base de datos
-├── config.py        # Configuración de la aplicación
-└── security.py      # Autenticación y seguridad
-migrations/          # Migraciones de Alembic
-```
+DATABASE_URL=mysql+pymysql://root:TU_CONTRASEÑA@localhost:3306/library_db
+JWT_SECRET=secret123
+3. Ejecutar Migraciones
+Generar las tablas en la base de datos usando Alembic:
 
-## Crear una copia privada de este repositorio
+Bash
 
-Para crear una copia privada de este repositorio en tu propia cuenta de GitHub, conservando el historial de commits, sigue estos pasos:
+python -m alembic upgrade head
+4. Poblar Datos de Prueba (Opcional)
+Se incluye un script automatizado que genera los 10 libros (ISBN 1120-1165), 5 usuarios, categorías y préstamos requeridos:
 
-- Primero, crea un repositorio privado en tu cuenta de GitHub. Guarda la URL del nuevo repositorio.
-- Luego, ejecuta los siguientes comandos en tu terminal, reemplazando `<URL_DE_TU_REPOSITORIO_PRIVADO>` con la URL de tu nuevo repositorio privado:
+Bash
 
-  ```bash
-  git clone https://github.com/dialvarezs/learning-vue-bd2-2025 # Clona el repositorio
-  cd learning-vue-bd2-2025
-  git remote remove origin                                      # Elimina el origen remoto existente
-  git remote add origin <URL_DE_TU_REPOSITORIO_PRIVADO>         # Agrega el nuevo origen remoto
-  git push -u origin main                                       # Sube la rama principal al
-  ```
+python semilla.py
+(Nota: Si esto falla, asegúrate de que las tablas existan con el paso 3).
+
+5. Iniciar el Servidor
+Bash
+
+litestar run
+La API estará disponible en: http://127.0.0.1:8000/schema/swagger
+
+📂 Estructura del Proyecto
+app/controllers: Endpoints de la API (Rutas).
+
+app/models: Definición de tablas SQLAlchemy.
+
+app/repositories: Lógica de negocio y consultas a la BD.
+
+app/dtos: Esquemas de validación de entrada/salida.
+
+migrations/: Archivos de control de versiones de BD.
+
+initial_data.sql: Respaldo completo de la base de datos exigido.
