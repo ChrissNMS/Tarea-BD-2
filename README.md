@@ -39,33 +39,19 @@ py -m venv venv
 
 # Instalar librerías
 pip install litestar[standard] uvicorn sqlalchemy alembic asyncpg pymysql cryptography pydantic-settings advanced-alchemy pyjwt pwdlib argon2-cffi
+
 2. Configurar Base de Datos
 Crear una base de datos vacía en MySQL llamada library_db.
 
-Configurar el archivo .env en la raíz del proyecto con tus credenciales:
-
-Properties
-
-DATABASE_URL=mysql+pymysql://root:TU_CONTRASEÑA@localhost:3306/library_db
-JWT_SECRET=secret123
 3. Ejecutar Migraciones
 Generar las tablas en la base de datos usando Alembic:
 
-Bash
-
 python -m alembic upgrade head
-4. Poblar Datos de Prueba (Opcional)
-Se incluye un script automatizado que genera los 10 libros (ISBN 1120-1165), 5 usuarios, categorías y préstamos requeridos:
 
-Bash
-
-python semilla.py
-(Nota: Si esto falla, asegúrate de que las tablas existan con el paso 3).
-
-5. Iniciar el Servidor
-Bash
+4. Iniciar el Servidor
 
 litestar run
+
 La API estará disponible en: http://127.0.0.1:8000/schema/swagger
 
 📂 Estructura del Proyecto
