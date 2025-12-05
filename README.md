@@ -1,5 +1,7 @@
 # Tarea 2 - API de Gestión de Biblioteca con Litestar
 
+Echo por: Christofer Gutiérrez
+
 Este proyecto implementa una API REST completa para la gestión de una biblioteca, desarrollada utilizando el framework **Litestar**, **SQLAlchemy** para el ORM y **MySQL** como base de datos relacional.
 
 ## 📋 Descripción del Proyecto
